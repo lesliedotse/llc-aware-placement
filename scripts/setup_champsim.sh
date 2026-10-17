@@ -27,7 +27,26 @@ git rev-parse HEAD > "$REPO_ROOT/results/champsim_commit.txt"   # record the exa
 if [[ ! -x vcpkg/vcpkg ]]; then
   vcpkg/bootstrap-vcpkg.sh -disableMetrics
 fi
-vcpkg/vcpkg install
+
+# vcpkg downloads bzip2 from sourceware.org, which is often unreachable.
+# macOS already ships bzip2 and zlib, so use those instead (set USE_SYSTEM_COMPRESSION=1
+# to do the same on Linux after `sudo apt install libbz2-dev zlib1g-dev`).
+if [[ "$(uname)" == "Darwin" || "${USE_SYSTEM_COMPRESSION:-0}" == "1" ]]; then
+  python3 - <<'EOF'
+import json
+j = json.load(open("vcpkg.json"))
+j["dependencies"] = [d for d in j["dependencies"] if d not in ("bzip2", "zlib")]
+json.dump(j, open("vcpkg.json", "w"), indent=2)
+print("using the system's bzip2 and zlib")
+EOF
+fi
+
+if ! vcpkg/vcpkg install; then
+  echo
+  echo "vcpkg could not download a library. Scroll up for the 'Downloading ...' line naming the"
+  echo "file and the site it tried, check your internet connection or proxy settings, then re-run."
+  exit 1
+fi
 
 python3 "$REPO_ROOT/scripts/make_configs.py" "$CHAMPSIM_DIR" "$REPO_ROOT/config/champsim"
 for cfg in "$REPO_ROOT"/config/champsim/*.json; do
