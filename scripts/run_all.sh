@@ -25,7 +25,7 @@ else
   bash scripts/setup_champsim.sh
 fi
 
-echo "== 3/4 downloading traces (about 10 GB the first time)"
+echo "== 3/4 downloading traces (about 3.4 GB the first time)"
 bash scripts/download_traces.sh
 
 echo "== 4/4 running simulations in the background; progress goes to $LOG"
