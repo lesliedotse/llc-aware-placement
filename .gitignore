@@ -1,0 +1,7 @@
+champsim/
+traces/
+results/raw/
+results/demo/
+.venv/
+__pycache__/
+*.pyc

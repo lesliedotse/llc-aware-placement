@@ -1,0 +1,15 @@
+{
+  "trace_base_url": "https://dpc3.compas.cs.stonybrook.edu/champsim-traces/speccpu/",
+  "note": "Six SPEC CPU 2017 traces from the DPC-3 set, chosen to span cache behaviour: cache-sensitive, streaming (cache-polluting) and compute-bound. Class labels are expectations to check against the solo-run MPKI, not results.",
+  "workloads": [
+    {"name": "mcf",       "trace": "605.mcf_s-665B.champsimtrace.xz",       "expected_class": "cache-sensitive"},
+    {"name": "omnetpp",   "trace": "620.omnetpp_s-874B.champsimtrace.xz",   "expected_class": "cache-sensitive"},
+    {"name": "xalancbmk", "trace": "623.xalancbmk_s-700B.champsimtrace.xz", "expected_class": "cache-sensitive"},
+    {"name": "lbm",       "trace": "619.lbm_s-4268B.champsimtrace.xz",      "expected_class": "streaming"},
+    {"name": "gcc",       "trace": "602.gcc_s-734B.champsimtrace.xz",       "expected_class": "mixed"},
+    {"name": "leela",     "trace": "641.leela_s-800B.champsimtrace.xz",     "expected_class": "compute-bound"}
+  ],
+  "policies": ["lru", "srrip", "drrip", "ship"],
+  "warmup_instructions": 20000000,
+  "simulation_instructions": 50000000
+}
