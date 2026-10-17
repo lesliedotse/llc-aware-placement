@@ -7,7 +7,7 @@ cd "$(dirname "$0")/.."
 REPO_ROOT="$(pwd)"
 CHAMPSIM_DIR="$REPO_ROOT/champsim"
 # Pin a commit so results are reproducible. Update deliberately, not by accident.
-CHAMPSIM_COMMIT="${CHAMPSIM_COMMIT:-develop}"
+CHAMPSIM_COMMIT="${CHAMPSIM_COMMIT:-410cee62d9c429c043ea611325ce00e6c303be2a}"   # ChampSim master as of Sep 2026
 
 if [[ "${1:-}" == "--docker" ]]; then
   docker run --rm -v "$REPO_ROOT":/work -w /work ubuntu:24.04 bash -c \
@@ -19,10 +19,40 @@ if [[ ! -d "$CHAMPSIM_DIR" ]]; then
   git clone https://github.com/ChampSim/ChampSim.git "$CHAMPSIM_DIR"
 fi
 cd "$CHAMPSIM_DIR"
+git checkout -- vcpkg.json 2>/dev/null || true   # undo edits from earlier runs
 git checkout "$CHAMPSIM_COMMIT"
 git submodule update --init
 mkdir -p "$REPO_ROOT/results"
 git rev-parse HEAD > "$REPO_ROOT/results/champsim_commit.txt"   # record the exact version used
+
+# ChampSim's Makefile looks for its libraries in the first folder under
+# vcpkg_installed/ (headers in include/, libraries in lib/). On a Mac with
+# Homebrew we fill that folder from Homebrew instead of building with vcpkg,
+# which failed on some Macs. Set USE_VCPKG=1 to force the vcpkg route.
+homebrew_deps() {
+  local brew_prefix="${BREW_PREFIX:-$(brew --prefix)}"
+  if [[ -z "${BREW_PREFIX:-}" ]]; then
+    brew install fmt cli11 nlohmann-json xz
+  fi
+  git checkout -- vcpkg.json 2>/dev/null || true
+  rm -rf vcpkg_installed
+  local t="vcpkg_installed/homebrew"
+  mkdir -p "$t/lib/manual-link"
+  ln -s "$brew_prefix/include" "$t/include"
+  for lib in fmt lzma; do
+    for f in "$brew_prefix"/lib/lib"$lib".*; do ln -sf "$f" "$t/lib/"; done
+  done
+  # Homebrew's CLI11 is header-only, but ChampSim links -lCLI11: give it an empty library.
+  echo 'void champsim_cli11_placeholder(void) {}' > "$t/cli11_placeholder.c"
+  cc -c "$t/cli11_placeholder.c" -o "$t/cli11_placeholder.o"
+  ar rcs "$t/lib/libCLI11.a" "$t/cli11_placeholder.o"
+  # zlib and bzip2 come with macOS itself.
+  echo "using Homebrew libraries from $brew_prefix"
+}
+
+if [[ "${USE_VCPKG:-0}" != "1" && ( -n "${BREW_PREFIX:-}" || ( "$(uname)" == "Darwin" && -x "$(command -v brew)" ) ) ]]; then
+  homebrew_deps
+else
 
 if [[ ! -x vcpkg/vcpkg ]]; then
   vcpkg/bootstrap-vcpkg.sh -disableMetrics
@@ -55,6 +85,8 @@ if ! vcpkg/vcpkg install; then
   echo "check your internet connection, then re-run. If it repeats, paste that error to Claude."
   exit 1
 fi
+
+fi  # end of the vcpkg route
 
 python3 "$REPO_ROOT/scripts/make_configs.py" "$CHAMPSIM_DIR" "$REPO_ROOT/config/champsim"
 for cfg in "$REPO_ROOT"/config/champsim/*.json; do
