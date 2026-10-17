@@ -28,23 +28,31 @@ if [[ ! -x vcpkg/vcpkg ]]; then
   vcpkg/bootstrap-vcpkg.sh -disableMetrics
 fi
 
-# vcpkg downloads bzip2 from sourceware.org, which is often unreachable.
-# macOS already ships bzip2 and zlib, so use those instead (set USE_SYSTEM_COMPRESSION=1
-# to do the same on Linux after `sudo apt install libbz2-dev zlib1g-dev`).
+# Trim ChampSim's dependency list before vcpkg installs it:
+#  - catch2 is only used by ChampSim's own unit tests, not by the simulator,
+#    and fails to build on some Macs.
+#  - vcpkg downloads bzip2 from sourceware.org, which is often unreachable.
+#    macOS already ships bzip2 and zlib, so use those (set USE_SYSTEM_COMPRESSION=1
+#    to do the same on Linux after `sudo apt install libbz2-dev zlib1g-dev`).
+SYSTEM_COMPRESSION=0
 if [[ "$(uname)" == "Darwin" || "${USE_SYSTEM_COMPRESSION:-0}" == "1" ]]; then
-  python3 - <<'EOF'
-import json
-j = json.load(open("vcpkg.json"))
-j["dependencies"] = [d for d in j["dependencies"] if d not in ("bzip2", "zlib")]
-json.dump(j, open("vcpkg.json", "w"), indent=2)
-print("using the system's bzip2 and zlib")
-EOF
+  SYSTEM_COMPRESSION=1
 fi
+SYSTEM_COMPRESSION="$SYSTEM_COMPRESSION" python3 -c '
+import json, os
+drop = {"catch2"}
+if os.environ["SYSTEM_COMPRESSION"] == "1":
+    drop |= {"bzip2", "zlib"}
+j = json.load(open("vcpkg.json"))
+j["dependencies"] = [d for d in j["dependencies"] if d not in drop]
+json.dump(j, open("vcpkg.json", "w"), indent=2)
+print("vcpkg will install:", ", ".join(j["dependencies"]))
+'
 
 if ! vcpkg/vcpkg install; then
   echo
-  echo "vcpkg could not download a library. Scroll up for the 'Downloading ...' line naming the"
-  echo "file and the site it tried, check your internet connection or proxy settings, then re-run."
+  echo "vcpkg failed to download or build a library. Scroll up for the first 'error:' line,"
+  echo "check your internet connection, then re-run. If it repeats, paste that error to Claude."
   exit 1
 fi
 
