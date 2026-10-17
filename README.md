@@ -63,7 +63,14 @@ python -m pytest tests                     # simulator sanity checks
 python experiments/run_placement.py --slowdown data/example_slowdown_PLACEHOLDER.csv --out results/demo
 ```
 
-Real experiments (needs ~20 GB disk for traces, and several hours of CPU):
+Real experiments, all in one command (needs ~15 GB free disk and several hours of CPU):
+
+```bash
+bash scripts/run_all.sh        # build ChampSim, download traces, start all simulations in the background
+tail -f results/run_all.log    # watch progress
+```
+
+Or step by step:
 
 ```bash
 bash scripts/setup_champsim.sh            # builds ChampSim binaries into champsim/bin
