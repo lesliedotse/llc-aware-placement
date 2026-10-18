@@ -115,29 +115,33 @@ def fig2(key):
 
 
 def fig3(key, load=0.5):
+    """Absolute p95 job time for each replacement policy under three schedulers (a dot plot)."""
     rows = read(RES / "q1_absolute" / "results.csv")
-    names = {"first_fit": "first-fit", "random": "random", "cache_aware_pack": "cache-aware\n(pack)",
-             "cache_aware": "cache-aware", "spread": "spread"}
-    fig, ax = plt.subplots(figsize=(6.2, 3.8), constrained_layout=True)
-    for p in ["lru", "ship"]:
-        for s, nm in names.items():
-            x, xc = mean_ci(rows, "mean_busy_sockets", policy=p, load=load, scheduler=s, estimate="exact")
-            y, yc = mean_ci(rows, "p95_slowdown", policy=p, load=load, scheduler=s, estimate="exact")
-            ax.errorbar(x, y, xerr=xc, yerr=yc, fmt="o", ms=7, color=COLOR[p], mec="white", mew=1.5,
-                        label=LABEL[p] if s == "first_fit" else None)
-            if p == "lru" and s in ("cache_aware", "spread"):
-                ax.annotate(nm, (x, y), xytext=(10, 6), textcoords="offset points", fontsize=8, color=MUTED)
+    present = [p for p in POLICY_ORDER if any(r["policy"] == p for r in rows)]
+    scheds = [("first_fit", "first-fit", "o", "white", MUTED),
+              ("cache_aware_pack", "cache-aware, same servers", "D", "#b5b4ad", "#b5b4ad"),
+              ("cache_aware", "cache-aware, threshold 0.1", "o", INK, INK)]
+    fig, ax = plt.subplots(figsize=(6.6, 0.55 * len(present) + 1.5), constrained_layout=True)
+    for yi, p in enumerate(reversed(present)):
+        vals = {}
+        for s, nm, mk, face, edge in scheds:
+            x, xc = mean_ci(rows, "p95_slowdown", policy=p, load=load, scheduler=s, estimate="exact")
+            sk, skc = mean_ci(rows, "mean_busy_sockets", policy=p, load=load, scheduler=s, estimate="exact")
+            vals[s] = (x, sk)
+            ax.errorbar(x, yi, xerr=xc, fmt=mk, ms=8, mfc=face, mec=edge, mew=1.5, ecolor=edge, capsize=2,
+                        label=nm if yi == 0 else None, zorder=3)
             key.append({"figure": "fig3", "policy": p, "scheduler": s, "load": load,
-                        "metric": "p95 job time vs LRU-alone / busy servers", "value": f"{y:.4f} / {x:.2f}", "ci95": f"{yc:.4f} / {xc:.2f}"})
-    ax.annotate("first-fit, random and\ncache-aware (pack):\nsame servers, ~3-4% apart", (30.2, 1.62),
-                fontsize=8, color=MUTED, va="center")
-    ax.set_xlabel("average servers (sockets) in use, of 50")
-    ax.set_ylabel("p95 job time\n(1.0 = running alone under LRU)")
-    ax.grid(color="#e6e5e0", lw=0.6)
-    from matplotlib.lines import Line2D
-    ax.legend(handles=[Line2D([], [], marker="o", ls="", color=COLOR[p], mec="white", ms=8, label=LABEL[p]) for p in ["lru", "ship"]],
-              title="replacement policy", frameon=False)
-    ax.set_title(f"Speed vs servers used at {load:.0%} load (lower-left is better)", loc="left")
+                        "metric": "p95 job time vs LRU-alone / busy servers", "value": f"{x:.4f} / {sk:.2f}",
+                        "ci95": f"{xc:.4f} / {skc:.2f}"})
+        ax.plot([vals["cache_aware"][0], vals["first_fit"][0]], [yi, yi], color="#d6d5cf", lw=2, zorder=1)
+        ax.text(vals["cache_aware"][0] - 0.03, yi, f"{vals['cache_aware'][0]:.2f}", ha="right", va="center", fontsize=8, color=INK)
+        ax.text(vals["first_fit"][0] + 0.03, yi, f"{vals['first_fit'][0]:.2f}", ha="left", va="center", fontsize=8, color=MUTED)
+    ax.set_yticks(range(len(present)), [LABEL[p] for p in reversed(present)])
+    ax.set_xlim(0.95, 1.85)
+    ax.set_xlabel("p95 job time (1.0 = running alone under LRU)")
+    ax.grid(axis="x", color="#e6e5e0", lw=0.6)
+    ax.legend(frameon=False, fontsize=8, loc="upper center", bbox_to_anchor=(0.5, -0.28), ncol=3)
+    ax.set_title(f"Placement moves p95 job time far more than the policy does ({load:.0%} load)", loc="left")
     fig.savefig(OUT / "fig3_tradeoff.png")
 
 

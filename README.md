@@ -130,9 +130,11 @@ benefit itself. With tight packing there is no reliable difference.
 
 ![Benefit by load](results/figures/fig2_benefit_vs_load.png)
 
-**4. In absolute job time, SHiP plus cache-aware placement is best.** p95 job
-time at 50% load is 1.09× LRU's run-alone time with SHiP + cache-aware, vs
-1.17× with LRU + cache-aware and 1.68× with LRU + first-fit.
+**4. In absolute job time, placement matters far more than the policy.** p95 job
+time at 50% load, relative to running alone under LRU, falls from 1.65-1.68 with
+first-fit to 1.09 (SHiP), 1.11 (DRRIP), 1.17 (LRU) and 1.19 (SRRIP) with
+cache-aware placement. SRRIP makes mcf and omnetpp about 6-7% slower when they
+run alone, which outweighs its better protection from lbm.
 
 ![Trade-off](results/figures/fig3_tradeoff.png)
 
@@ -175,7 +177,7 @@ python analysis/figures.py
 - [x] Repository, simulator and tests
 - [x] ChampSim runs (solo + pairs) for LRU, SRRIP, DRRIP and SHiP
 - [x] Placement experiments on the measured tables
-- [ ] Absolute-time comparison (fig. 3) for SRRIP and DRRIP: needs the 4-policy `results/runs.csv`
+- [x] Absolute-time comparison for all four policies
 - [x] Threshold, job-mix and cluster-size sensitivity
 - [ ] Second trace window per benchmark (`scripts/run_window2.sh`)
 - [ ] Port Mockingjay to current ChampSim (stretch goal)
