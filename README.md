@@ -98,20 +98,76 @@ build fails, use the Docker route in `scripts/setup_champsim.sh --docker`.
 sockets, only the neighbour choice differs. `cache_aware` trades extra sockets
 for speed, so always report `mean_busy_sockets` next to its slowdown.
 
+## Results (first full run, October 2026)
+
+54 ChampSim simulations: 6 SPEC CPU 2017 workloads, alone and in all 21 pairs,
+under LRU and SHiP, with 20M warmup + 50M measured instructions per core on a
+2-core chip with a shared 2 MB LLC. Placement experiments: 50 sockets, 3000
+jobs per run, 10 seeds per setting, 95% confidence intervals. All numbers are
+in `results/figures/key_numbers.csv`.
+
+**1. Interference is dominated by one neighbor.** lbm (a streaming workload)
+slows mcf down 3.10× under LRU and 3.48× under SHiP; leela is never slowed by
+more than 1.3%.
+
+![Measured slowdowns](results/figures/fig1_slowdown_tables.png)
+
+**2. Choosing a better neighbor alone helps little; using a few more servers helps a lot.**
+At 50% load, cache-aware packing (same number of servers as first-fit) cuts
+p95 slowdown only from 1.69 to 1.62. Letting the scheduler open an extra server
+when every neighbor is bad cuts it to 1.17, using 35.4 instead of 29.0 servers
+on average (+22%). Above about 70% load the cluster is full and no scheduler
+can help.
+
+**3. SHiP slightly reduces the benefit of cache-aware placement, but does not remove it.**
+With extra servers allowed, the p95 reduction is 0.52 (LRU) vs 0.48 (SHiP) at
+50% load and 0.34 vs 0.25 at 60% load. Both differences are significant in a
+paired test, and both are small next to the benefit itself. With tight packing
+there is no reliable difference. This is the same direction CRUISE (ASPLOS
+2012) reported for older policies.
+
+![Benefit by load](results/figures/fig2_benefit_vs_load.png)
+
+**4. In absolute job time, SHiP plus cache-aware placement is best.** p95 job
+time at 50% load is 1.09× LRU's run-alone time with SHiP + cache-aware, vs
+1.17× with LRU + cache-aware and 1.68× with LRU + first-fit.
+
+![Trade-off](results/figures/fig3_tradeoff.png)
+
+**5. Estimates don't need to be precise.** With large random errors in the
+slowdown estimates (σ = 1.0, log-normal), p95 slowdown rises only from 1.17 to
+1.22 (first-fit: 1.69). Knowing only each program's average sensitivity gives
+1.27.
+
+![Robustness](results/figures/fig4_robustness.png)
+
+Reproduce the analysis from the committed tables:
+
+```bash
+python experiments/run_placement.py --slowdown results/slowdown_lru.csv results/slowdown_ship.csv --loads 0.3 0.4 0.5 0.6 0.7 0.9 --out results/q1
+python experiments/run_placement.py --absolute results/runs.csv --loads 0.3 0.4 0.5 0.6 0.7 0.9 --out results/q1_absolute
+python experiments/run_placement.py --slowdown results/slowdown_lru.csv --loads 0.3 0.5 --noise 0 0.25 0.5 1.0 coarse --out results/q3
+python analysis/figures.py
+```
+
 ## Status
 
-- [x] Repository and simulator (8 sanity tests pass; demo runs end to end on the placeholder table)
-- [x] ChampSim config generator and run script (command lines checked with `--dry-run`)
-- [ ] ChampSim runs (solo + pairs) for LRU, SRRIP, DRRIP, SHiP
+- [x] Repository, simulator and tests
+- [x] ChampSim runs (solo + pairs) for LRU and SHiP
+- [x] Placement experiments on the measured tables
+- [ ] Add DRRIP/SRRIP runs (already built; `run_corun.py --policies lru srrip drrip ship`)
+- [ ] Longer trace windows and a second trace per benchmark, to check the results hold
 - [ ] Port Mockingjay to current ChampSim (stretch goal)
-- [ ] Placement experiments on measured tables
 - [ ] Technical report
 
 ## Limitations
 
-Results come from simulation: a 2-core model with one shared LLC, short trace
-windows, and a simplified cluster model. They show trends under these
-assumptions, not production-cloud performance.
+Results come from simulation: a 2-core model with one shared LLC, one 50M
+instruction window per benchmark, 6 workloads, and a simplified cluster model
+where every job is one of those 6 programs, chosen uniformly. They show trends
+under these assumptions, not production-cloud performance. The significance
+tests above are not corrected for the 12 comparisons made, so treat single
+borderline results with caution.
 
 ## License
 

@@ -43,8 +43,9 @@ def spread(job: Job, cluster: Cluster, table: Table) -> int:
 
 
 def pair_cost(a: str, b: str, table: Table) -> float:
-    """Extra slowdown created when a and b share a socket (0 = no interference)."""
-    return (table[(a, b)] - 1.0) + (table[(b, a)] - 1.0)
+    """Extra slowdown created when a and b share a socket, compared with each
+    running alone (0 = no interference)."""
+    return (table[(a, b)] - table.get((a, ""), 1.0)) + (table[(b, a)] - table.get((b, ""), 1.0))
 
 
 def make_cache_aware(threshold: float = 0.10):

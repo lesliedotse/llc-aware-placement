@@ -1,0 +1,41 @@
+figure,policy,scheduler,load,metric,value,ci95
+fig2,lru,cache_aware_pack,0.3,p95 slowdown reduction vs first_fit,0.071,0.0329
+fig2,lru,cache_aware_pack,0.4,p95 slowdown reduction vs first_fit,0.09,0.0235
+fig2,lru,cache_aware_pack,0.5,p95 slowdown reduction vs first_fit,0.0721,0.0245
+fig2,lru,cache_aware_pack,0.6,p95 slowdown reduction vs first_fit,0.021,0.0249
+fig2,lru,cache_aware_pack,0.7,p95 slowdown reduction vs first_fit,0.0035,0.0135
+fig2,lru,cache_aware_pack,0.9,p95 slowdown reduction vs first_fit,0.0044,0.0098
+fig2,ship,cache_aware_pack,0.3,p95 slowdown reduction vs first_fit,0.0628,0.0291
+fig2,ship,cache_aware_pack,0.4,p95 slowdown reduction vs first_fit,0.0412,0.0333
+fig2,ship,cache_aware_pack,0.5,p95 slowdown reduction vs first_fit,0.0699,0.0232
+fig2,ship,cache_aware_pack,0.6,p95 slowdown reduction vs first_fit,0.0248,0.0284
+fig2,ship,cache_aware_pack,0.7,p95 slowdown reduction vs first_fit,0.0104,0.0127
+fig2,ship,cache_aware_pack,0.9,p95 slowdown reduction vs first_fit,-0.0064,0.0142
+fig2,lru,cache_aware,0.3,p95 slowdown reduction vs first_fit,0.6292,0.0292
+fig2,lru,cache_aware,0.4,p95 slowdown reduction vs first_fit,0.6312,0.0316
+fig2,lru,cache_aware,0.5,p95 slowdown reduction vs first_fit,0.5222,0.0199
+fig2,lru,cache_aware,0.6,p95 slowdown reduction vs first_fit,0.3351,0.046
+fig2,lru,cache_aware,0.7,p95 slowdown reduction vs first_fit,0.0923,0.0517
+fig2,lru,cache_aware,0.9,p95 slowdown reduction vs first_fit,0.0114,0.0106
+fig2,ship,cache_aware,0.3,p95 slowdown reduction vs first_fit,0.6344,0.005
+fig2,ship,cache_aware,0.4,p95 slowdown reduction vs first_fit,0.611,0.0141
+fig2,ship,cache_aware,0.5,p95 slowdown reduction vs first_fit,0.4766,0.0205
+fig2,ship,cache_aware,0.6,p95 slowdown reduction vs first_fit,0.2509,0.046
+fig2,ship,cache_aware,0.7,p95 slowdown reduction vs first_fit,0.0502,0.0291
+fig2,ship,cache_aware,0.9,p95 slowdown reduction vs first_fit,0.0151,0.0226
+fig3,lru,first_fit,0.5,p95 job time vs LRU-alone / busy servers,1.6833 / 28.88,0.0243 / 0.28
+fig3,lru,random,0.5,p95 job time vs LRU-alone / busy servers,1.6859 / 28.58,0.0150 / 0.46
+fig3,lru,cache_aware_pack,0.5,p95 job time vs LRU-alone / busy servers,1.6233 / 28.60,0.0284 / 0.38
+fig3,lru,cache_aware,0.5,p95 job time vs LRU-alone / busy servers,1.1667 / 35.41,0.0103 / 0.47
+fig3,lru,spread,0.5,p95 job time vs LRU-alone / busy servers,1.3062 / 39.03,0.0118 / 0.53
+fig3,ship,first_fit,0.5,p95 job time vs LRU-alone / busy servers,1.6466 / 28.16,0.0256 / 0.30
+fig3,ship,random,0.5,p95 job time vs LRU-alone / busy servers,1.6606 / 28.19,0.0095 / 0.30
+fig3,ship,cache_aware_pack,0.5,p95 job time vs LRU-alone / busy servers,1.6367 / 27.73,0.0177 / 0.31
+fig3,ship,cache_aware,0.5,p95 job time vs LRU-alone / busy servers,1.0926 / 34.59,0.0157 / 0.46
+fig3,ship,spread,0.5,p95 job time vs LRU-alone / busy servers,1.2390 / 38.42,0.0095 / 0.48
+fig4,lru,first_fit,0.5,p95 slowdown,1.6899,0.0141
+fig4,lru,cache_aware[0],0.5,p95 slowdown,1.1677,0.0097
+fig4,lru,cache_aware[0.25],0.5,p95 slowdown,1.1802,0.0213
+fig4,lru,cache_aware[0.5],0.5,p95 slowdown,1.1913,0.0296
+fig4,lru,cache_aware[1.0],0.5,p95 slowdown,1.2205,0.0361
+fig4,lru,cache_aware[coarse],0.5,p95 slowdown,1.271,0.0223

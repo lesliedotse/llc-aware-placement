@@ -58,9 +58,12 @@ class Cluster:
 
 
 def rate(job: Job, cluster: Cluster, table: Table) -> float:
+    """Speed of a job right now. A table may also hold (type, "") entries: the
+    job's slowdown when running ALONE relative to a common reference, used to
+    compare replacement policies in absolute time. Missing means 1.0."""
     nb = cluster.neighbour(job)
     if nb is None:
-        return 1.0
+        return 1.0 / table.get((job.type, ""), 1.0)
     return 1.0 / table[(job.type, nb.type)]
 
 

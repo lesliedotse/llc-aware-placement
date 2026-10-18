@@ -1,0 +1,17 @@
+done lru
+
+policy   load scheduler    estimate  mean sd   p95 sd  >target  sockets
+lru       0.3 cache_aware  0           1.005    1.025    0.000     23.4
+lru       0.3 cache_aware  0.25        1.007    1.030    0.000     23.1
+lru       0.3 cache_aware  0.5         1.007    1.033    0.000     23.0
+lru       0.3 cache_aware  1.0         1.022    1.125    0.070     22.3
+lru       0.3 cache_aware  coarse      1.001    1.003    0.001     25.4
+lru       0.3 first_fit    exact       1.163    1.654    0.433     18.1
+lru       0.5 cache_aware  0           1.031    1.168    0.094     35.4
+lru       0.5 cache_aware  0.25        1.036    1.180    0.100     35.1
+lru       0.5 cache_aware  0.5         1.038    1.191    0.104     35.0
+lru       0.5 cache_aware  1.0         1.051    1.220    0.157     34.2
+lru       0.5 cache_aware  coarse      1.062    1.271    0.130     37.1
+lru       0.5 first_fit    exact       1.171    1.690    0.442     29.0
+
+wrote results/q3/results.csv and results/q3/summary.csv

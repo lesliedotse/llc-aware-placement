@@ -91,3 +91,15 @@ def test_parse_champsim_output():
     assert cores[0]["llc_misses"] == 100000
     assert cores[0]["llc_mpki"] == pytest.approx(2.0)
     assert cores[1]["llc_mpki"] == pytest.approx(0.2)
+
+
+def test_absolute_table_matches_relative_for_reference_policy():
+    runs = ROOT / "results" / "runs.csv"
+    if not runs.exists():
+        return  # measured data not present in this checkout
+    rel = load_table(ROOT / "results" / "slowdown_lru.csv")
+    from placement.workload import absolute_table
+    ab = absolute_table(runs, "lru")
+    for key, v in rel.items():
+        assert ab[key] == pytest.approx(v, rel=1e-3)
+    assert all(ab[(t, "")] == pytest.approx(1.0) for t in types_of(rel))

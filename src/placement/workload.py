@@ -10,10 +10,11 @@ from .sim import SLOTS_PER_SOCKET, Job, Table
 
 
 def load_table(path: Path) -> Table:
+    """Read victim,neighbor,slowdown rows. An empty neighbor means "running alone"."""
     table: Table = {}
     with open(path) as f:
         for row in csv.DictReader(f):
-            table[(row["victim"], row["neighbor"])] = float(row["slowdown"])
+            table[(row["victim"], row["neighbor"] or "")] = float(row["slowdown"])
     types = sorted({v for v, _ in table})
     missing = [(a, b) for a in types for b in types if (a, b) not in table]
     if missing:
@@ -23,6 +24,28 @@ def load_table(path: Path) -> Table:
 
 def types_of(table: Table) -> list[str]:
     return sorted({v for v, _ in table})
+
+
+def absolute_table(runs_csv: Path, policy: str, reference: str = "lru") -> Table:
+    """Slowdowns of `policy` measured against the REFERENCE policy's solo IPC.
+
+    (v, n) -> IPC_ref_solo(v) / IPC_policy(v next to n)
+    (v, "") -> IPC_ref_solo(v) / IPC_policy_solo(v)   (below 1 = faster than the reference)
+    Job times from such a table are directly comparable across policies.
+    """
+    with open(runs_csv) as f:
+        rows = list(csv.DictReader(f))
+    ref = {r["workload"]: float(r["ipc"]) for r in rows if r["policy"] == reference and not r["neighbor"]}
+    table: Table = {}
+    pair_vals: dict[tuple[str, str], list[float]] = {}
+    for r in rows:
+        if r["policy"] != policy:
+            continue
+        key = (r["workload"], r["neighbor"] or "")
+        pair_vals.setdefault(key, []).append(ref[r["workload"]] / float(r["ipc"]))
+    for key, vals in pair_vals.items():
+        table[key] = sum(vals) / len(vals)
+    return table
 
 
 def noisy_table(table: Table, sigma: float, seed: int) -> Table:

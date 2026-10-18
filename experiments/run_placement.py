@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from placement import first_fit, make_cache_aware, make_random, simulate, spread  # noqa: E402
-from placement.workload import coarse_table, load_table, noisy_table, poisson_jobs, types_of  # noqa: E402
+from placement.workload import absolute_table, coarse_table, load_table, noisy_table, poisson_jobs, types_of  # noqa: E402
 
 METRICS = ["mean_slowdown", "p95_slowdown", "max_slowdown", "frac_over_target", "mean_wait", "mean_busy_sockets"]
 
@@ -47,7 +47,9 @@ def ci95(xs: list[float]) -> float:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--slowdown", nargs="+", type=Path, required=True)
+    ap.add_argument("--slowdown", nargs="+", type=Path, default=[], help="per-policy slowdown tables (relative to each policy's own solo run)")
+    ap.add_argument("--absolute", type=Path, help="runs.csv: compare policies in absolute time against LRU's solo speed")
+    ap.add_argument("--policies", nargs="+", default=["lru", "ship"], help="policies to use with --absolute")
     ap.add_argument("--loads", nargs="+", type=float, default=[0.5, 0.7, 0.9])
     ap.add_argument("--seeds", type=int, default=10)
     ap.add_argument("--sockets", type=int, default=50)
@@ -59,10 +61,15 @@ def main() -> None:
     args = ap.parse_args()
     args.out.mkdir(parents=True, exist_ok=True)
 
+    if args.absolute:
+        tables = [(p, absolute_table(args.absolute, p)) for p in args.policies]
+    elif args.slowdown:
+        tables = [(path.stem.replace("slowdown_", ""), load_table(path)) for path in args.slowdown]
+    else:
+        ap.error("give --slowdown tables or --absolute runs.csv")
+
     rows = []
-    for path in args.slowdown:
-        policy = path.stem.replace("slowdown_", "")
-        true = load_table(path)
+    for policy, true in tables:
         types = types_of(true)
         for load in args.loads:
             for seed in range(args.seeds):
