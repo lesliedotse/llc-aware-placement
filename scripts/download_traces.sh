@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 # Download the six traces listed in config/workloads.json into traces/ (about 3.4 GB total).
 # Finished files are skipped and interrupted downloads resume where they stopped.
+# Usage: bash scripts/download_traces.sh [config/workloads_window2.json]
 set -euo pipefail
 cd "$(dirname "$0")/.."
+export SPEC="${1:-config/workloads.json}"
 mkdir -p traces
 python3 - <<'EOF' > traces/urls.txt
-import json
-spec = json.load(open("config/workloads.json"))
+import json, os
+spec = json.load(open(os.environ["SPEC"]))
 for w in spec["workloads"]:
     print(spec["trace_base_url"] + w["trace"])
 EOF
@@ -16,7 +18,7 @@ NEED_GB=$(python3 - <<'EOF'
 import json, os
 sizes_mb = {"605.mcf_s-665B": 976, "620.omnetpp_s-874B": 765, "623.xalancbmk_s-700B": 153,
             "619.lbm_s-4268B": 737, "602.gcc_s-734B": 351, "641.leela_s-800B": 404}
-spec = json.load(open("config/workloads.json"))
+spec = json.load(open(os.environ["SPEC"]))
 need = 0
 for w in spec["workloads"]:
     f = os.path.join("traces", w["trace"])

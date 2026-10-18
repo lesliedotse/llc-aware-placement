@@ -14,6 +14,7 @@ Runs already present in results/raw are reused, so the script can be stopped
 and restarted.
 
 Usage: python experiments/run_corun.py [--policies lru ship] [--jobs 4] [--dry-run]
+       python experiments/run_corun.py --spec config/workloads_window2.json --results results/window2
 """
 import argparse
 import csv
@@ -105,10 +106,11 @@ def main() -> None:
     ap.add_argument("--champsim-bin", type=Path, default=ROOT / "champsim" / "bin")
     ap.add_argument("--traces", type=Path, default=ROOT / "traces")
     ap.add_argument("--results", type=Path, default=ROOT / "results")
+    ap.add_argument("--spec", type=Path, default=ROOT / "config" / "workloads.json", help="workload list (e.g. config/workloads_window2.json)")
     ap.add_argument("--dry-run", action="store_true", help="print the commands only")
     args = ap.parse_args()
 
-    spec = json.loads((ROOT / "config" / "workloads.json").read_text())
+    spec = json.loads(args.spec.read_text())
     raw_dir = args.results / "raw"
     runs = plan_runs(spec, args.policies)
     print(f"{len(runs)} runs planned for policies {args.policies}")

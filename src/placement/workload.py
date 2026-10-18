@@ -67,11 +67,13 @@ def coarse_table(table: Table) -> Table:
 
 
 def poisson_jobs(types: list[str], n_jobs: int, n_sockets: int, load: float, seed: int,
-                 mean_work: float = 100.0, diurnal: bool = True) -> list[Job]:
+                 mean_work: float = 100.0, diurnal: bool = True,
+                 weights: dict[str, float] | None = None) -> list[Job]:
     """Jobs arriving as a Poisson process, optionally with a day/night rate swing.
 
     `load` is the offered load as a fraction of all slots (ignoring slowdown).
-    Work is exponential with mean `mean_work`; types are drawn uniformly.
+    Work is exponential with mean `mean_work`. Types are drawn uniformly, or in
+    proportion to `weights` (a missing type gets weight 0).
     """
     rng = random.Random(seed)
     slots = n_sockets * SLOTS_PER_SOCKET
@@ -83,7 +85,8 @@ def poisson_jobs(types: list[str], n_jobs: int, n_sockets: int, load: float, see
         t += rng.expovariate(peak)
         r = base_rate * (1 + 0.5 * math.sin(2 * math.pi * t / period)) if diurnal else base_rate
         if rng.random() <= r / peak:
-            jobs.append(Job(len(jobs), rng.choice(types), t, rng.expovariate(1 / mean_work)))
+            ty = rng.choice(types) if weights is None else rng.choices(types, [weights.get(x, 0.0) for x in types])[0]
+            jobs.append(Job(len(jobs), ty, t, rng.expovariate(1 / mean_work)))
     return jobs
 
 

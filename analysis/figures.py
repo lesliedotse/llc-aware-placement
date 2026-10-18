@@ -167,6 +167,46 @@ def fig4(key, load=0.5):
                     "metric": "p95 slowdown", "value": round(v, 4), "ci95": round(c, 4)})
 
 
+def fig5(key, load=0.5):
+    path = RES / "tradeoff" / "summary.csv"
+    if not path.exists():
+        return
+    rows = [r for r in read(path) if float(r["load"]) == load]
+    fig, ax = plt.subplots(figsize=(6.6, 3.9), constrained_layout=True)
+    for p in ["lru", "ship"]:
+        pts = [r for r in rows if r["policy"] == p and r["scheduler"] == "cache_aware"]
+        pts.sort(key=lambda r: -float(r["threshold"]))  # connect points in threshold order, inf first
+        xs = [float(r["extra_sockets_pct"]) for r in pts]
+        ys = [float(r["p95_saved"]) for r in pts]
+        ax.plot(xs, ys, color=COLOR[p], lw=2, marker="o", ms=5, label=f"{LABEL[p]}, cache-aware")
+        ax.errorbar(xs, ys, yerr=[float(r["p95_saved_ci95"]) for r in pts], fmt="none", ecolor=COLOR[p], alpha=0.5, lw=1)
+        sp = next(r for r in rows if r["policy"] == p and r["scheduler"] == "spread")
+        ax.plot(float(sp["extra_sockets_pct"]), float(sp["p95_saved"]), marker="s", ms=7, ls="", color=COLOR[p], mec="white", mew=1.2,
+                label=f"{LABEL[p]}, spread")
+        for r in pts:
+            key.append({"figure": "fig5", "policy": p, "scheduler": f"cache_aware[t={r['threshold']}]", "load": load,
+                        "metric": "p95 saved vs first_fit / extra sockets %",
+                        "value": f"{float(r['p95_saved']):.4f} / {float(r['extra_sockets_pct']):.1f}",
+                        "ci95": f"{float(r['p95_saved_ci95']):.4f} / {float(r['extra_sockets_pct_ci95']):.1f}"})
+    lru = {r["threshold"]: r for r in rows if r["policy"] == "lru" and r["scheduler"] == "cache_aware"}
+    notes = {"inf": ("never opens a server\n(cache-aware pack)", (6, -26)),
+             "1.0": ("refuse only the 4 pairs\nwith lbm (threshold 1.0)", (12, -30)),
+             "0.1": ("threshold 0.1\n(used in Figs. 2-3)", (-8, -34)),
+             "0.0": ("threshold 0", (-10, 10))}
+    for t, (txt, off) in notes.items():
+        r = lru[t]
+        ax.annotate(txt, (float(r["extra_sockets_pct"]), float(r["p95_saved"])), xytext=off, textcoords="offset points",
+                    fontsize=7.5, color=MUTED, ha="left" if off[0] >= 0 else "right",
+                    arrowprops={"arrowstyle": "-", "color": "#b5b4ad", "lw": 0.8})
+    ax.axhline(0, color=MUTED, lw=0.8)
+    ax.set_xlabel("extra servers used vs first-fit (%)")
+    ax.set_ylabel("p95 slowdown saved vs first-fit")
+    ax.grid(color="#e6e5e0", lw=0.6)
+    ax.legend(frameon=False, fontsize=8, loc="center right", bbox_to_anchor=(1.0, 0.22))
+    ax.set_title(f"Most of the benefit costs under 1% more servers ({load:.0%} load)", loc="left")
+    fig.savefig(OUT / "fig5_threshold_tradeoff.png")
+
+
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
     key: list[dict] = []
@@ -174,8 +214,9 @@ if __name__ == "__main__":
     fig2(key)
     fig3(key)
     fig4(key)
+    fig5(key)
     with open(OUT / "key_numbers.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(key[0].keys()))
         w.writeheader()
         w.writerows(key)
-    print(f"wrote 4 figures and key_numbers.csv to {OUT}")
+    print(f"wrote figures and key_numbers.csv to {OUT}")

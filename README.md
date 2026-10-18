@@ -151,13 +151,32 @@ python experiments/run_placement.py --slowdown results/slowdown_lru.csv --loads 
 python analysis/figures.py
 ```
 
+## Robustness checks
+
+- **Threshold.** Sweeping cache_aware's threshold (`experiments/run_tradeoff.py`)
+  shows that refusing only the 4 pairs that include lbm (threshold 1.0) keeps
+  0.44 of the 0.52 p95 reduction at 50% load with under 1% extra servers
+  (LRU; SHiP: 0.44 with no extra servers). Thresholds of 0.1-0.3 gain little
+  more but use 16-22% more servers.
+
+![Threshold trade-off](results/figures/fig5_threshold_tradeoff.png)
+
+- **Job mix and cluster size.** `experiments/run_sensitivity.py` repeats the
+  comparison with a cache-heavy mix, a streaming-heavy mix, and 20 or 200
+  sockets. Cache-aware placement helps in every case; its benefit is smaller
+  with fewer streaming jobs (0.23 at 50% load, cache-heavy) and larger with
+  more (0.69, streaming-heavy). Results are in `results/sensitivity/summary.csv`.
+- **Second trace window.** `bash scripts/run_window2.sh` reruns LRU and SHiP on
+  a different region of each program (`config/workloads_window2.json`).
+
 ## Status
 
 - [x] Repository, simulator and tests
 - [x] ChampSim runs (solo + pairs) for LRU, SRRIP, DRRIP and SHiP
 - [x] Placement experiments on the measured tables
 - [ ] Absolute-time comparison (fig. 3) for SRRIP and DRRIP: needs the 4-policy `results/runs.csv`
-- [ ] Longer trace windows and a second trace per benchmark, to check the results hold
+- [x] Threshold, job-mix and cluster-size sensitivity
+- [ ] Second trace window per benchmark (`scripts/run_window2.sh`)
 - [ ] Port Mockingjay to current ChampSim (stretch goal)
 - [ ] Technical report
 

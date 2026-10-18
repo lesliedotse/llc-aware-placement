@@ -1,0 +1,42 @@
+{
+  "trace_base_url": "https://dpc3.compas.cs.stonybrook.edu/champsim-traces/speccpu/",
+  "note": "Second trace window: the same six SPEC CPU 2017 programs as workloads.json, but a different SimPoint region of each, to check that results do not depend on one window.",
+  "workloads": [
+    {
+      "name": "mcf",
+      "trace": "605.mcf_s-1554B.champsimtrace.xz",
+      "expected_class": "cache-sensitive"
+    },
+    {
+      "name": "omnetpp",
+      "trace": "620.omnetpp_s-141B.champsimtrace.xz",
+      "expected_class": "cache-sensitive"
+    },
+    {
+      "name": "xalancbmk",
+      "trace": "623.xalancbmk_s-165B.champsimtrace.xz",
+      "expected_class": "cache-sensitive"
+    },
+    {
+      "name": "lbm",
+      "trace": "619.lbm_s-2676B.champsimtrace.xz",
+      "expected_class": "streaming"
+    },
+    {
+      "name": "gcc",
+      "trace": "602.gcc_s-2226B.champsimtrace.xz",
+      "expected_class": "mixed"
+    },
+    {
+      "name": "leela",
+      "trace": "641.leela_s-1052B.champsimtrace.xz",
+      "expected_class": "compute-bound"
+    }
+  ],
+  "policies": [
+    "lru",
+    "ship"
+  ],
+  "warmup_instructions": 20000000,
+  "simulation_instructions": 50000000
+}
