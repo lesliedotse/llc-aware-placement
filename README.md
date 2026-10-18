@@ -100,15 +100,16 @@ for speed, so always report `mean_busy_sockets` next to its slowdown.
 
 ## Results (first full run, October 2026)
 
-54 ChampSim simulations: 6 SPEC CPU 2017 workloads, alone and in all 21 pairs,
-under LRU and SHiP, with 20M warmup + 50M measured instructions per core on a
+108 ChampSim simulations: 6 SPEC CPU 2017 workloads, alone and in all 21 pairs,
+under four LLC replacement policies (LRU, SRRIP, DRRIP, SHiP), with 20M warmup + 50M measured instructions per core on a
 2-core chip with a shared 2 MB LLC. Placement experiments: 50 sockets, 3000
 jobs per run, 10 seeds per setting, 95% confidence intervals. All numbers are
 in `results/figures/key_numbers.csv`.
 
 **1. Interference is dominated by one neighbor.** lbm (a streaming workload)
-slows mcf down 3.10× under LRU and 3.48× under SHiP; leela is never slowed by
-more than 1.3%.
+slows mcf down 3.10× under LRU, 3.18× under DRRIP and 3.48× under SHiP.
+SRRIP, which inserts new lines with a low priority, protects best (2.51×).
+leela is never slowed by more than 1.3%.
 
 ![Measured slowdowns](results/figures/fig1_slowdown_tables.png)
 
@@ -119,12 +120,12 @@ when every neighbor is bad cuts it to 1.17, using 35.4 instead of 29.0 servers
 on average (+22%). Above about 70% load the cluster is full and no scheduler
 can help.
 
-**3. SHiP slightly reduces the benefit of cache-aware placement, but does not remove it.**
-With extra servers allowed, the p95 reduction is 0.52 (LRU) vs 0.48 (SHiP) at
-50% load and 0.34 vs 0.25 at 60% load. Both differences are significant in a
-paired test, and both are small next to the benefit itself. With tight packing
-there is no reliable difference. This is the same direction CRUISE (ASPLOS
-2012) reported for older policies.
+**3. The replacement policy barely changes the benefit of cache-aware placement.**
+With extra servers allowed, the p95 reduction at 50% load is 0.52 (LRU), 0.50
+(SRRIP), 0.48 (DRRIP) and 0.48 (SHiP). The smarter policies reduce the benefit
+slightly (by 0.02-0.05 at 50% load, 0.08 for SHiP at 60%), which is the same
+direction CRUISE (ASPLOS 2012) reported, but the effect is small next to the
+benefit itself. With tight packing there is no reliable difference.
 
 ![Benefit by load](results/figures/fig2_benefit_vs_load.png)
 
@@ -144,7 +145,7 @@ slowdown estimates (σ = 1.0, log-normal), p95 slowdown rises only from 1.17 to
 Reproduce the analysis from the committed tables:
 
 ```bash
-python experiments/run_placement.py --slowdown results/slowdown_lru.csv results/slowdown_ship.csv --loads 0.3 0.4 0.5 0.6 0.7 0.9 --out results/q1
+python experiments/run_placement.py --slowdown results/slowdown_lru.csv results/slowdown_srrip.csv results/slowdown_drrip.csv results/slowdown_ship.csv --loads 0.3 0.4 0.5 0.6 0.7 0.9 --out results/q1
 python experiments/run_placement.py --absolute results/runs.csv --loads 0.3 0.4 0.5 0.6 0.7 0.9 --out results/q1_absolute
 python experiments/run_placement.py --slowdown results/slowdown_lru.csv --loads 0.3 0.5 --noise 0 0.25 0.5 1.0 coarse --out results/q3
 python analysis/figures.py
@@ -153,9 +154,9 @@ python analysis/figures.py
 ## Status
 
 - [x] Repository, simulator and tests
-- [x] ChampSim runs (solo + pairs) for LRU and SHiP
+- [x] ChampSim runs (solo + pairs) for LRU, SRRIP, DRRIP and SHiP
 - [x] Placement experiments on the measured tables
-- [ ] Add DRRIP/SRRIP runs (already built; `run_corun.py --policies lru srrip drrip ship`)
+- [ ] Absolute-time comparison (fig. 3) for SRRIP and DRRIP: needs the 4-policy `results/runs.csv`
 - [ ] Longer trace windows and a second trace per benchmark, to check the results hold
 - [ ] Port Mockingjay to current ChampSim (stretch goal)
 - [ ] Technical report
@@ -166,7 +167,7 @@ Results come from simulation: a 2-core model with one shared LLC, one 50M
 instruction window per benchmark, 6 workloads, and a simplified cluster model
 where every job is one of those 6 programs, chosen uniformly. They show trends
 under these assumptions, not production-cloud performance. The significance
-tests above are not corrected for the 12 comparisons made, so treat single
+tests above are not corrected for the 18 policy comparisons made, so treat single
 borderline results with caution.
 
 ## License

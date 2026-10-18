@@ -26,8 +26,10 @@ from matplotlib.colors import LogNorm  # noqa: E402
 
 RES = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parents[1] / "results"
 OUT = RES / "figures"
-COLOR = {"lru": "#2a78d6", "ship": "#eb6834"}  # categorical slots 1-2 (validated palette)
-LABEL = {"lru": "LRU", "ship": "SHiP"}
+# categorical slots 1-4 of the validated palette; each policy keeps its color in every figure
+COLOR = {"lru": "#2a78d6", "ship": "#eb6834", "srrip": "#1baf7a", "drrip": "#eda100"}
+POLICY_ORDER = ["lru", "srrip", "drrip", "ship"]
+LABEL = {"lru": "LRU", "srrip": "SRRIP", "drrip": "DRRIP", "ship": "SHiP"}
 ORDER = ["mcf", "omnetpp", "gcc", "xalancbmk", "lbm", "leela"]  # most to least cache-hungry
 INK, MUTED = "#0b0b0b", "#52514e"
 
@@ -91,8 +93,9 @@ def fig2(key):
     fig, axes = plt.subplots(1, 2, figsize=(8.6, 3.4), sharey=True, constrained_layout=True)
     panels = [("cache_aware_pack", "Same number of servers as first-fit"),
               ("cache_aware", "May use extra servers (threshold 0.10)")]
+    present = [p for p in POLICY_ORDER if any(r["policy"] == p for r in rows)]
     for ax, (sched, title) in zip(axes, panels):
-        for p in ["lru", "ship"]:
+        for p in present:
             m, c = zip(*[paired(rows, p, ld, "first_fit", sched) for ld in loads])
             ax.plot(loads, m, color=COLOR[p], lw=2, marker="o", ms=4, label=LABEL[p])
             ax.fill_between(loads, [a - b for a, b in zip(m, c)], [a + b for a, b in zip(m, c)],
@@ -107,7 +110,7 @@ def fig2(key):
         ax.grid(axis="y", color="#e6e5e0", lw=0.6)
     axes[0].set_ylabel("p95 slowdown saved vs first-fit\n(higher = cache-aware helps more)")
     axes[1].legend(title="replacement policy", frameon=False, loc="upper right")
-    fig.suptitle("Benefit of cache-aware placement, by LLC policy (95% CI, 10 seeds)", x=0.02, ha="left", fontsize=10.5)
+    fig.suptitle(f"Benefit of cache-aware placement, by LLC policy ({len(present)} policies, 95% CI, 10 seeds)", x=0.02, ha="left", fontsize=10.5)
     fig.savefig(OUT / "fig2_benefit_vs_load.png")
 
 

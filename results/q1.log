@@ -1,7 +1,39 @@
 done lru
+done srrip
+done drrip
 done ship
 
 policy   load scheduler    estimate  mean sd   p95 sd  >target  sockets
+drrip     0.3 cache_aware  exact       1.006    1.031    0.000     23.4
+drrip     0.3 cache_aware_pack exact       1.141    1.595    0.433     17.8
+drrip     0.3 first_fit    exact       1.162    1.659    0.434     18.1
+drrip     0.3 random       exact       1.161    1.657    0.436     18.0
+drrip     0.3 spread       exact       1.004    1.000    0.009     28.5
+drrip     0.4 cache_aware  exact       1.013    1.042    0.025     32.2
+drrip     0.4 cache_aware_pack exact       1.139    1.589    0.440     24.7
+drrip     0.4 first_fit    exact       1.163    1.654    0.441     25.1
+drrip     0.4 random       exact       1.164    1.657    0.440     25.2
+drrip     0.4 spread       exact       1.040    1.203    0.102     36.8
+drrip     0.5 cache_aware  exact       1.035    1.178    0.099     35.4
+drrip     0.5 cache_aware_pack exact       1.141    1.598    0.447     28.4
+drrip     0.5 first_fit    exact       1.165    1.659    0.440     28.8
+drrip     0.5 random       exact       1.163    1.657    0.441     28.9
+drrip     0.5 spread       exact       1.071    1.282    0.186     38.7
+drrip     0.6 cache_aware  exact       1.087    1.346    0.247     38.3
+drrip     0.6 cache_aware_pack exact       1.153    1.623    0.457     33.1
+drrip     0.6 first_fit    exact       1.168    1.664    0.451     33.6
+drrip     0.6 random       exact       1.169    1.662    0.452     33.5
+drrip     0.6 spread       exact       1.106    1.418    0.286     41.4
+drrip     0.7 cache_aware  exact       1.140    1.589    0.383     41.9
+drrip     0.7 cache_aware_pack exact       1.168    1.662    0.464     39.6
+drrip     0.7 first_fit    exact       1.173    1.671    0.458     39.5
+drrip     0.7 random       exact       1.173    1.673    0.461     39.7
+drrip     0.7 spread       exact       1.150    1.618    0.397     43.4
+drrip     0.9 cache_aware  exact       1.169    1.675    0.447     43.1
+drrip     0.9 cache_aware_pack exact       1.177    1.698    0.460     42.9
+drrip     0.9 first_fit    exact       1.178    1.695    0.459     42.7
+drrip     0.9 random       exact       1.175    1.693    0.458     42.5
+drrip     0.9 spread       exact       1.169    1.673    0.446     43.4
 lru       0.3 cache_aware  exact       1.005    1.025    0.000     23.4
 lru       0.3 cache_aware_pack exact       1.145    1.583    0.433     17.9
 lru       0.3 first_fit    exact       1.163    1.654    0.433     18.1
@@ -62,5 +94,35 @@ ship      0.9 cache_aware_pack exact       1.186    1.695    0.437     42.5
 ship      0.9 first_fit    exact       1.183    1.688    0.431     42.8
 ship      0.9 random       exact       1.185    1.690    0.432     42.7
 ship      0.9 spread       exact       1.180    1.682    0.424     43.4
+srrip     0.3 cache_aware  exact       1.005    1.029    0.000     23.3
+srrip     0.3 cache_aware_pack exact       1.137    1.567    0.427     17.8
+srrip     0.3 first_fit    exact       1.154    1.655    0.427     18.0
+srrip     0.3 random       exact       1.155    1.670    0.431     17.9
+srrip     0.3 spread       exact       1.004    1.000    0.009     28.5
+srrip     0.4 cache_aware  exact       1.011    1.042    0.021     32.1
+srrip     0.4 cache_aware_pack exact       1.139    1.584    0.440     24.8
+srrip     0.4 first_fit    exact       1.155    1.664    0.432     25.0
+srrip     0.4 random       exact       1.157    1.663    0.435     25.0
+srrip     0.4 spread       exact       1.037    1.196    0.101     36.9
+srrip     0.5 cache_aware  exact       1.031    1.165    0.095     35.2
+srrip     0.5 cache_aware_pack exact       1.139    1.582    0.439     28.5
+srrip     0.5 first_fit    exact       1.157    1.669    0.434     28.7
+srrip     0.5 random       exact       1.158    1.671    0.439     28.7
+srrip     0.5 spread       exact       1.065    1.292    0.179     39.0
+srrip     0.6 cache_aware  exact       1.082    1.310    0.242     38.1
+srrip     0.6 cache_aware_pack exact       1.148    1.609    0.447     33.2
+srrip     0.6 first_fit    exact       1.159    1.661    0.445     33.4
+srrip     0.6 random       exact       1.159    1.668    0.444     33.3
+srrip     0.6 spread       exact       1.100    1.410    0.278     41.3
+srrip     0.7 cache_aware  exact       1.134    1.563    0.378     41.8
+srrip     0.7 cache_aware_pack exact       1.159    1.667    0.457     39.3
+srrip     0.7 first_fit    exact       1.165    1.677    0.456     39.3
+srrip     0.7 random       exact       1.167    1.689    0.457     39.5
+srrip     0.7 spread       exact       1.141    1.628    0.389     43.3
+srrip     0.9 cache_aware  exact       1.160    1.670    0.440     43.2
+srrip     0.9 cache_aware_pack exact       1.167    1.679    0.456     42.7
+srrip     0.9 first_fit    exact       1.167    1.687    0.455     42.7
+srrip     0.9 random       exact       1.167    1.686    0.453     42.8
+srrip     0.9 spread       exact       1.163    1.677    0.442     43.1
 
 wrote results/q1/results.csv and results/q1/summary.csv
