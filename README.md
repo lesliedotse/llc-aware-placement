@@ -113,12 +113,13 @@ leela is never slowed by more than 1.3%.
 
 ![Measured slowdowns](results/figures/fig1_slowdown_tables.png)
 
-**2. Choosing a better neighbor alone helps little; using a few more servers helps a lot.**
+**2. Choosing a better neighbor alone helps little; refusing a few toxic pairings helps a lot.**
 At 50% load, cache-aware packing (same number of servers as first-fit) cuts
-p95 slowdown only from 1.69 to 1.62. Letting the scheduler open an extra server
-when every neighbor is bad cuts it to 1.17, using 35.4 instead of 29.0 servers
-on average (+22%). Above about 70% load the cluster is full and no scheduler
-can help.
+p95 slowdown only from 1.69 to 1.62. Refusing just the 4 of 21 pairings that
+include lbm cuts it to 1.25 with under 1% more servers. Refusing every pairing
+that adds more than 0.10 slowdown reaches 1.17, but uses 22% more servers
+(35.4 instead of 29.0). Above about 70% load the cluster is full and no
+scheduler can help.
 
 **3. The replacement policy barely changes the benefit of cache-aware placement.**
 With extra servers allowed, the p95 reduction at 50% load is 0.52 (LRU), 0.50
