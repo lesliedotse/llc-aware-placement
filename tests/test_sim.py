@@ -71,11 +71,11 @@ CPU 1 runs b.xz
 
 Region of Interest Statistics
 
-cpu0 cumulative IPC: 0.8 instructions: 50000000 cycles: 62500000
-cpu0 Branch Prediction Accuracy: 95% MPKI: 3 Average ROB Occupancy at Mispredict: 100
+CPU 0 cumulative IPC: 0.8 instructions: 50000000 cycles: 62500000
+CPU 0 Branch Prediction Accuracy: 95% MPKI: 3 Average ROB Occupancy at Mispredict: 100
 
-cpu1 cumulative IPC: 1.5 instructions: 50000000 cycles: 33333333
-cpu1 Branch Prediction Accuracy: 99% MPKI: 1 Average ROB Occupancy at Mispredict: 100
+CPU 1 cumulative IPC: 1.5 instructions: 50000000 cycles: 33333333
+CPU 1 Branch Prediction Accuracy: 99% MPKI: 1 Average ROB Occupancy at Mispredict: 100
 
 cpu0->cpu0_L2C TOTAL        ACCESS:    1000000 HIT:     800000 MISS:     200000 MISS_MERGE:          0
 cpu0->LLC TOTAL        ACCESS:     200000 HIT:     100000 MISS:     100000 MISS_MERGE:          0

@@ -1,7 +1,8 @@
 """Parse ChampSim's plain-text output (Region of Interest section)."""
 import re
 
-_IPC = re.compile(r"^(\S+) cumulative IPC: (\S+) instructions: (\d+) cycles: (\d+)")
+# core names are "CPU 0" in current ChampSim ("cpu0" in some older versions)
+_IPC = re.compile(r"^(CPU \d+|cpu\d+) cumulative IPC: (\S+) instructions: (\d+) cycles: (\d+)")
 _LLC = re.compile(r"^cpu(\d+)->(\S*LLC)\s+TOTAL\s+ACCESS:\s+(\d+)\s+HIT:\s+(\d+)\s+MISS:\s+(\d+)")
 
 
@@ -10,7 +11,7 @@ def parse_roi(text: str) -> list[dict]:
     marker = "Region of Interest Statistics"
     if marker not in text:
         raise ValueError("no 'Region of Interest Statistics' section; did the run finish?")
-    roi = text.split(marker, 1)[1].split("DRAM Statistics", 1)[0]
+    roi = text.rsplit(marker, 1)[1].split("DRAM Statistics", 1)[0]  # last phase = simulation
     cores: list[dict] = []
     llc: dict[int, tuple[int, int]] = {}
     for line in roi.splitlines():
