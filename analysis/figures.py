@@ -211,6 +211,36 @@ def fig5(key, load=0.5):
     fig.savefig(OUT / "fig5_threshold_tradeoff.png")
 
 
+def fig6(key, load=0.5):
+    """Threshold trade-off in both trace windows, side by side."""
+    paths = [("Window 1", RES / "tradeoff" / "summary.csv"), ("Window 2", RES / "window2" / "tradeoff" / "summary.csv")]
+    if not all(pth.exists() for _, pth in paths):
+        return
+    fig, axes = plt.subplots(1, 2, figsize=(8.6, 3.6), sharey=True, constrained_layout=True)
+    for ax, (title, pth) in zip(axes, paths):
+        rows = [r for r in read(pth) if float(r["load"]) == load]
+        for p in ["lru", "ship"]:
+            pts = sorted((r for r in rows if r["policy"] == p and r["scheduler"] == "cache_aware"), key=lambda r: -float(r["threshold"]))
+            xs = [float(r["extra_sockets_pct"]) for r in pts]
+            ys = [float(r["p95_saved"]) for r in pts]
+            ax.plot(xs, ys, color=COLOR[p], lw=2, marker="o", ms=4, label=LABEL[p])
+            ax.errorbar(xs, ys, yerr=[float(r["p95_saved_ci95"]) for r in pts], fmt="none", ecolor=COLOR[p], alpha=0.5, lw=1)
+            for r in pts:
+                key.append({"figure": "fig6", "policy": p, "scheduler": f"{title} cache_aware[t={r['threshold']}]", "load": load,
+                            "metric": "p95 saved vs first_fit / extra sockets %",
+                            "value": f"{float(r['p95_saved']):.4f} / {float(r['extra_sockets_pct']):.1f}",
+                            "ci95": f"{float(r['p95_saved_ci95']):.4f} / {float(r['extra_sockets_pct_ci95']):.1f}"})
+        ax.axhline(0, color=MUTED, lw=0.8)
+        ax.set_title(title, loc="left")
+        ax.set_xlabel("extra servers used vs first-fit (%)")
+        ax.grid(color="#e6e5e0", lw=0.6)
+    axes[0].set_ylabel("p95 slowdown saved vs first-fit")
+    axes[1].legend(title="replacement policy", frameon=False, fontsize=8, loc="center right")
+    fig.suptitle(f"A few percent more servers buys most of the benefit in both trace windows ({load:.0%} load)",
+                 x=0.02, ha="left", fontsize=10.5)
+    fig.savefig(OUT / "fig6_window_comparison.png")
+
+
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
     key: list[dict] = []
@@ -219,6 +249,7 @@ if __name__ == "__main__":
     fig3(key)
     fig4(key)
     fig5(key)
+    fig6(key)
     with open(OUT / "key_numbers.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(key[0].keys()))
         w.writeheader()

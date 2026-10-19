@@ -121,12 +121,12 @@ that adds more than 0.10 slowdown reaches 1.17, but uses 22% more servers
 (35.4 instead of 29.0). Above about 70% load the cluster is full and no
 scheduler can help.
 
-**3. The replacement policy barely changes the benefit of cache-aware placement.**
-With extra servers allowed, the p95 reduction at 50% load is 0.52 (LRU), 0.50
-(SRRIP), 0.48 (DRRIP) and 0.48 (SHiP). The smarter policies reduce the benefit
-slightly (by 0.02-0.05 at 50% load, 0.08 for SHiP at 60%), which is the same
-direction CRUISE (ASPLOS 2012) reported, but the effect is small next to the
-benefit itself. With tight packing there is no reliable difference.
+**3. The replacement policy changes the benefit of cache-aware placement, in either direction.**
+In window 1, the p95 reduction at 50% load is 0.52 (LRU), 0.50 (SRRIP), 0.48
+(DRRIP) and 0.48 (SHiP): smarter policies shrink it slightly, as CRUISE (ASPLOS
+2012) found. In the second trace window SHiP *grows* it (1.13 vs 0.43 for LRU),
+because SHiP's large solo speedups are exactly what a bad neighbor destroys. See
+Robustness checks below.
 
 ![Benefit by load](results/figures/fig2_benefit_vs_load.png)
 
@@ -169,8 +169,19 @@ python analysis/figures.py
   sockets. Cache-aware placement helps in every case; its benefit is smaller
   with fewer streaming jobs (0.23 at 50% load, cache-heavy) and larger with
   more (0.69, streaming-heavy). Results are in `results/sensitivity/summary.csv`.
-- **Second trace window.** `bash scripts/run_window2.sh` reruns LRU and SHiP on
-  a different region of each program (`config/workloads_window2.json`).
+- **Second trace window.** `bash scripts/run_window2.sh` reran LRU and SHiP on
+  a different region of each program (`config/workloads_window2.json`,
+  results in `results/window2/`). The main findings hold: lbm is still the
+  worst neighbor under LRU; cache-aware placement still cuts p95 slowdown a lot
+  (0.43 at 50% load under LRU); a few percent more servers still buys most of
+  it; and SHiP plus cache-aware placement is still fastest in absolute time
+  (p95 1.02 vs 1.29 for LRU plus cache-aware). **One finding did not hold:** in
+  this window SHiP makes mcf and xalancbmk about 80% faster when alone, sharing
+  erases much of that gain, and the benefit of cache-aware placement under SHiP
+  is 1.13, far *larger* than under LRU. So whether a smarter policy shrinks or
+  grows the value of placement depends on the workload.
+
+![Window comparison](results/figures/fig6_window_comparison.png)
 
 ## Status
 
@@ -179,7 +190,7 @@ python analysis/figures.py
 - [x] Placement experiments on the measured tables
 - [x] Absolute-time comparison for all four policies
 - [x] Threshold, job-mix and cluster-size sensitivity
-- [ ] Second trace window per benchmark (`scripts/run_window2.sh`)
+- [x] Second trace window per benchmark (LRU and SHiP)
 - [ ] Port Mockingjay to current ChampSim (stretch goal)
 - [ ] Technical report
 

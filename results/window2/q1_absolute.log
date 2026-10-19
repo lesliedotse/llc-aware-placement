@@ -1,0 +1,26 @@
+done lru
+done ship
+
+policy   load scheduler    estimate  mean sd   p95 sd  >target  sockets
+lru       0.5 cache_aware  exact       1.049    1.286    0.170     36.0
+lru       0.5 cache_aware_pack exact       1.207    1.638    0.576     29.8
+lru       0.5 first_fit    exact       1.228    1.711    0.585     30.3
+lru       0.5 random       exact       1.228    1.715    0.589     30.3
+lru       0.5 spread       exact       1.105    1.540    0.269     39.0
+lru       0.6 cache_aware  exact       1.135    1.587    0.364     39.1
+lru       0.6 cache_aware_pack exact       1.224    1.677    0.593     34.6
+lru       0.6 first_fit    exact       1.236    1.745    0.600     35.1
+lru       0.6 random       exact       1.236    1.724    0.601     35.0
+lru       0.6 spread       exact       1.157    1.615    0.401     41.5
+ship      0.5 cache_aware  exact       0.856    1.016    0.017     32.0
+ship      0.5 cache_aware_pack exact       1.028    1.599    0.288     25.6
+ship      0.5 first_fit    exact       1.074    1.641    0.337     26.7
+ship      0.5 random       exact       1.076    1.641    0.340     26.7
+ship      0.5 spread       exact       0.904    1.228    0.083     36.3
+ship      0.6 cache_aware  exact       0.893    1.200    0.086     35.4
+ship      0.6 cache_aware_pack exact       1.036    1.603    0.301     30.2
+ship      0.6 first_fit    exact       1.079    1.650    0.346     31.1
+ship      0.6 random       exact       1.075    1.645    0.345     31.1
+ship      0.6 spread       exact       0.961    1.452    0.173     38.8
+
+wrote results/window2/q1_absolute/results.csv and results/window2/q1_absolute/summary.csv
