@@ -1,0 +1,7 @@
+policy,load,n,benefit_minus_lru,t,p,p_holm,significant_holm
+ship,0.3,10,0.7183,60.242,0.0,0.0,True
+ship,0.4,10,0.7582,45.39,0.0,0.0,True
+ship,0.5,10,0.7027,29.258,0.0,0.0,True
+ship,0.6,10,0.1129,2.66,0.02606,0.07818,False
+ship,0.7,10,0.0296,1.284,0.23135,0.46269,False
+ship,0.9,10,0.0119,0.497,0.63078,0.63078,False

@@ -42,13 +42,13 @@ def plan_runs(spec: dict, policies: list[str]) -> list[dict]:
     return runs
 
 
-def run_one(run: dict, spec: dict, champsim_bin: Path, trace_dir: Path, raw_dir: Path, dry: bool) -> Path:
+def run_one(run: dict, spec: dict, champsim_bin: Path, trace_dir: Path, raw_dir: Path, dry: bool, suffix: str = "") -> Path:
     traces = {w["name"]: w["trace"] for w in spec["workloads"]}
     tag = "__".join(run["workloads"])
     out = raw_dir / run["policy"] / f"{tag}.txt"
     if out.exists() and "Region of Interest Statistics" in out.read_text(errors="ignore"):
         return out
-    exe = champsim_bin / f"champsim_{run['policy']}_{len(run['workloads'])}core"
+    exe = champsim_bin / f"champsim_{run['policy']}_{len(run['workloads'])}core{suffix}"
     cmd = [str(exe), "--warmup-instructions", str(spec["warmup_instructions"]),
            "--simulation-instructions", str(spec["simulation_instructions"]), "--hide-heartbeat"]
     cmd += [str(trace_dir / traces[w]) for w in run["workloads"]]
@@ -107,6 +107,7 @@ def main() -> None:
     ap.add_argument("--traces", type=Path, default=ROOT / "traces")
     ap.add_argument("--results", type=Path, default=ROOT / "results")
     ap.add_argument("--spec", type=Path, default=ROOT / "config" / "workloads.json", help="workload list (e.g. config/workloads_window2.json)")
+    ap.add_argument("--binary-suffix", default="", help='e.g. "_pf" for the prefetcher-enabled binaries')
     ap.add_argument("--dry-run", action="store_true", help="print the commands only")
     args = ap.parse_args()
 
@@ -115,7 +116,7 @@ def main() -> None:
     runs = plan_runs(spec, args.policies)
     print(f"{len(runs)} runs planned for policies {args.policies}")
     with ThreadPoolExecutor(max_workers=args.jobs) as pool:
-        list(pool.map(lambda r: run_one(r, spec, args.champsim_bin, args.traces, raw_dir, args.dry_run), runs))
+        list(pool.map(lambda r: run_one(r, spec, args.champsim_bin, args.traces, raw_dir, args.dry_run, args.binary_suffix), runs))
     if not args.dry_run:
         build_tables(spec, args.policies, raw_dir, args.results)
 
