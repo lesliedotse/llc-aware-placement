@@ -1,4 +1,6 @@
 """Parse ChampSim's plain-text output (Region of Interest section)."""
+from __future__ import annotations
+
 import re
 
 # core names are "CPU 0" in current ChampSim ("cpu0" in some older versions)

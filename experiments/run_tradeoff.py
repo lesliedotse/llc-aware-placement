@@ -6,6 +6,8 @@ Each point is compared with first_fit on the same job stream (paired per seed).
 
 Usage: python experiments/run_tradeoff.py --slowdown results/slowdown_lru.csv results/slowdown_ship.csv --out results/tradeoff
 """
+from __future__ import annotations
+
 import argparse
 import csv
 import math

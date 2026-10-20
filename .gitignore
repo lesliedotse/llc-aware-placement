@@ -5,3 +5,5 @@ results/demo/
 .venv/
 __pycache__/
 *.pyc
+results/window2/raw/
+results/window2_prefetch/raw/

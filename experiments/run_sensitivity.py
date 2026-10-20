@@ -13,6 +13,8 @@ stream, so differences are paired per seed.
 
 Usage: python experiments/run_sensitivity.py --slowdown results/slowdown_lru.csv results/slowdown_ship.csv --out results/sensitivity
 """
+from __future__ import annotations
+
 import argparse
 import csv
 import statistics

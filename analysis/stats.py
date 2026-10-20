@@ -10,6 +10,8 @@ rate at 5% across all comparisons in one results file.
 Usage: python analysis/stats.py results/q1/results.csv [results/window2/q1/results.csv ...]
 Writes <dir>/policy_tests.csv next to each input.
 """
+from __future__ import annotations
+
 import csv
 import math
 import statistics

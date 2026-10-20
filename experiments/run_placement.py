@@ -12,6 +12,8 @@ Usage:
   python experiments/run_placement.py --slowdown results/slowdown_lru.csv results/slowdown_ship.csv --out results/q1
   python experiments/run_placement.py --slowdown results/slowdown_lru.csv --noise 0 0.25 0.5 1.0 coarse --out results/q3
 """
+from __future__ import annotations
+
 import argparse
 import csv
 import statistics

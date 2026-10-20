@@ -10,6 +10,8 @@ Usage: python scripts/make_configs.py <champsim_dir> <out_dir> [--prefetch] [--p
 --prefetch turns on hardware prefetchers (IP-stride at L1D, SPP at L2C) and
 adds "_pf" to every executable and config name.
 """
+from __future__ import annotations
+
 import copy
 import json
 import sys

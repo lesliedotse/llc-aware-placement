@@ -8,6 +8,8 @@
 
 Usage: python analysis/plots.py results/q1
 """
+from __future__ import annotations
+
 import csv
 import sys
 from pathlib import Path

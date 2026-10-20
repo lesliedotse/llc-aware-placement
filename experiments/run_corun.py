@@ -16,6 +16,8 @@ and restarted.
 Usage: python experiments/run_corun.py [--policies lru ship] [--jobs 4] [--dry-run]
        python experiments/run_corun.py --spec config/workloads_window2.json --results results/window2
 """
+from __future__ import annotations
+
 import argparse
 import csv
 import itertools

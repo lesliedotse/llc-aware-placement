@@ -12,6 +12,8 @@ the per-seed difference.
 
 Usage: python analysis/figures.py [results_dir]
 """
+from __future__ import annotations
+
 import csv
 import math
 import statistics
