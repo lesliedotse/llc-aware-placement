@@ -3,11 +3,18 @@
 #   A. SRRIP and DRRIP on window 2      -> results/window2/          (54 new runs)
 #   B. LRU and SHiP with prefetchers on -> results/window2_prefetch/ (54 new runs)
 # Needs the window-2 traces in traces/ (from scripts/run_window2.sh).
+# Finished runs are kept; a test that is already complete is skipped.
 # Usage (from the repository folder): bash scripts/run_robustness.sh
 set -euo pipefail
 cd "$(dirname "$0")/.."
 REPO="$(pwd)"
 mkdir -p results/window2 results/window2_prefetch
+
+if pgrep -f "run_corun.py" >/dev/null || pgrep -f "bin/champsim_" >/dev/null; then
+  echo "Simulations are already running; not starting a second copy."
+  echo "Check them with:  bash scripts/progress.sh"
+  exit 1
+fi
 
 echo "== checking window-2 traces"
 python3 - <<'EOF'
@@ -20,23 +27,41 @@ print("all 6 present")
 EOF
 
 echo "== building prefetcher-enabled simulators (about 5-10 minutes the first time)"
+bash scripts/patch_champsim.sh
+SPP_SRC=champsim/prefetcher/spp_dev/spp_dev.cc
 python3 scripts/make_configs.py champsim config/champsim --prefetch --policies lru ship > /dev/null
 for cfg in config/champsim/*_pf.json; do
   exe="champsim/bin/champsim_$(basename "$cfg" .json)"
-  if [[ -x "$exe" ]]; then echo "have $(basename "$exe")"; continue; fi
+  if [[ -x "$exe" && "$exe" -nt "$SPP_SRC" ]]; then echo "have $(basename "$exe")"; continue; fi
   echo "building $(basename "$exe")"
   (cd champsim && ./config.sh "$REPO/$cfg" > /dev/null && make -j"$(getconf _NPROCESSORS_ONLN)" > /dev/null)
 done
 
+done_runs() { find "$@" -name '*.txt' 2>/dev/null | wc -l | tr -d ' '; }
+A_LEFT=$(( 54 - $(done_runs results/window2/raw/srrip results/window2/raw/drrip) ))
+B_LEFT=$(( 54 - $(done_runs results/window2_prefetch/raw) ))
+# 8 parallel simulations in total: split them when both tests still have work
+TESTS=$(( (A_LEFT > 0) + (B_LEFT > 0) ))
+if [[ $TESTS -eq 0 ]]; then echo "both tests are already complete"; exit 0; fi
+JOBS=$(( 8 / TESTS ))
+
 KEEP_AWAKE=""
 command -v caffeinate >/dev/null && KEEP_AWAKE="caffeinate -i"
 
-echo "== starting both tests in the background"
-nohup $KEEP_AWAKE python3 experiments/run_corun.py --spec config/workloads_window2.json \
-  --results results/window2 --policies lru srrip drrip ship --jobs 4 > results/window2/run_more.log 2>&1 &
-echo "A (SRRIP/DRRIP)  started, process $!"
-nohup $KEEP_AWAKE python3 experiments/run_corun.py --spec config/workloads_window2.json \
-  --results results/window2_prefetch --policies lru ship --binary-suffix _pf --jobs 4 > results/window2_prefetch/run.log 2>&1 &
-echo "B (prefetchers)  started, process $!"
+echo "== starting in the background ($JOBS simulations at a time per test)"
+if [[ $A_LEFT -gt 0 ]]; then
+  nohup $KEEP_AWAKE python3 experiments/run_corun.py --spec config/workloads_window2.json \
+    --results results/window2 --policies lru srrip drrip ship --jobs "$JOBS" > results/window2/run_more.log 2>&1 &
+  echo "A (SRRIP/DRRIP)  started, process $!  ($A_LEFT runs left)"
+else
+  echo "A (SRRIP/DRRIP)  already complete"
+fi
+if [[ $B_LEFT -gt 0 ]]; then
+  nohup $KEEP_AWAKE python3 experiments/run_corun.py --spec config/workloads_window2.json \
+    --results results/window2_prefetch --policies lru ship --binary-suffix _pf --jobs "$JOBS" > results/window2_prefetch/run.log 2>&1 &
+  echo "B (prefetchers)  started, process $!  ($B_LEFT runs left)"
+else
+  echo "B (prefetchers)  already complete"
+fi
 echo
 echo "Check progress with:  bash scripts/progress.sh"

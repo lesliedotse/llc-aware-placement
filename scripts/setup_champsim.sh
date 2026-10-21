@@ -24,6 +24,7 @@ git checkout "$CHAMPSIM_COMMIT"
 git submodule update --init
 mkdir -p "$REPO_ROOT/results"
 git rev-parse HEAD > "$REPO_ROOT/results/champsim_commit.txt"   # record the exact version used
+bash "$REPO_ROOT/scripts/patch_champsim.sh"   # local bug fixes, documented in that script
 
 # ChampSim's Makefile looks for its libraries in the first folder under
 # vcpkg_installed/ (headers in include/, libraries in lib/). On a Mac with
