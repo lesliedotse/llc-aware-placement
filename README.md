@@ -190,11 +190,25 @@ python analysis/figures.py
   order is SHiP 1.02, DRRIP 1.07, SRRIP 1.08, LRU 1.29. In window 1 SRRIP was
   the slowest policy; here it beats LRU, so policy rankings also depend on the
   program phase measured.
-- **Prefetchers on (test B, running).** LRU and SHiP on window 2 with an
-  IP-stride L1D prefetcher and SPP at L2 (`results/window2_prefetch/`).
+- **Prefetchers on.** `bash scripts/run_robustness.sh` (test B) reran LRU and
+  SHiP on window 2 with an IP-stride L1D prefetcher and SPP at L2
+  (`results/window2_prefetch/`). Prefetching speeds up most programs alone
+  (gcc about 6x, xalancbmk 2.2x under LRU) and shrinks SHiP's solo advantage
+  (mcf +33% instead of +81%, xalancbmk +11% instead of +77%). lbm is still by
+  far the worst neighbor, and cache-aware placement still saves 0.56 (LRU) and
+  0.54 (SHiP) of p95 slowdown at 50% load; the two are not significantly
+  different at any load after Holm correction. Refusing only the lbm pairs
+  (threshold 1.0) keeps 0.53 of it for 1.5% (LRU) or 0.5% (SHiP) more servers.
   ChampSim's SPP aborts when its global history register fills with
   confidence-100 entries; `scripts/patch_champsim.sh` fixes the victim search
   without changing any run that did not abort.
+
+![Conditions](results/figures/fig7_conditions.png)
+
+  **Summary across conditions:** cache-aware placement helps in every
+  condition and the lbm pairs carry most of the benefit; *which* replacement
+  policy gains most from it changes with the program phase and with
+  prefetching, so a scheduler should not assume a fixed answer.
 
 ![Window comparison](results/figures/fig6_window_comparison.png)
 
@@ -206,7 +220,7 @@ python analysis/figures.py
 - [x] Absolute-time comparison for all four policies
 - [x] Threshold, job-mix and cluster-size sensitivity
 - [x] Second trace window per benchmark (all four policies)
-- [ ] Prefetchers on, second window (running)
+- [x] Prefetchers on, second window (LRU and SHiP)
 - [ ] Port Mockingjay to current ChampSim (stretch goal)
 - [x] Technical report (draft)
 

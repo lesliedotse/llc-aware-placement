@@ -131,3 +131,13 @@ fig6,ship,Window 2 cache_aware[t=0.3],0.5,p95 saved vs first_fit / extra sockets
 fig6,ship,Window 2 cache_aware[t=0.2],0.5,p95 saved vs first_fit / extra sockets %,1.1336 / 13.4,0.0608 / 1.2
 fig6,ship,Window 2 cache_aware[t=0.1],0.5,p95 saved vs first_fit / extra sockets %,1.1336 / 13.4,0.0608 / 1.2
 fig6,ship,Window 2 cache_aware[t=0.0],0.5,p95 saved vs first_fit / extra sockets %,1.1091 / 18.6,0.0626 / 1.2
+fig7,lru,Window 1 cache_aware,0.5,p95 slowdown reduction vs first_fit,0.5222,0.0199
+fig7,srrip,Window 1 cache_aware,0.5,p95 slowdown reduction vs first_fit,0.504,0.0205
+fig7,drrip,Window 1 cache_aware,0.5,p95 slowdown reduction vs first_fit,0.4809,0.0145
+fig7,ship,Window 1 cache_aware,0.5,p95 slowdown reduction vs first_fit,0.4766,0.0205
+fig7,lru,Window 2 cache_aware,0.5,p95 slowdown reduction vs first_fit,0.431,0.0421
+fig7,srrip,Window 2 cache_aware,0.5,p95 slowdown reduction vs first_fit,0.6071,0.0795
+fig7,drrip,Window 2 cache_aware,0.5,p95 slowdown reduction vs first_fit,0.6518,0.0746
+fig7,ship,Window 2 cache_aware,0.5,p95 slowdown reduction vs first_fit,1.1336,0.0608
+fig7,lru,"Window 2, prefetchers on cache_aware",0.5,p95 slowdown reduction vs first_fit,0.5637,0.0392
+fig7,ship,"Window 2, prefetchers on cache_aware",0.5,p95 slowdown reduction vs first_fit,0.537,0.0723

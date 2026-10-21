@@ -1,0 +1,8 @@
+
+results/window2_prefetch/q1/results.csv  (6 comparisons, Holm-corrected at 5%)
+  ship   load 0.3: +0.007  p=0.7092  p_holm=1.0000  
+  ship   load 0.4: -0.001  p=0.9680  p_holm=1.0000  
+  ship   load 0.5: -0.027  p=0.3024  p_holm=1.0000  
+  ship   load 0.6: -0.027  p=0.4039  p_holm=1.0000  
+  ship   load 0.7: +0.092  p=0.0098  p_holm=0.0587  
+  ship   load 0.9: +0.043  p=0.1402  p_holm=0.7010  

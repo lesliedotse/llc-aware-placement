@@ -243,6 +243,36 @@ def fig6(key, load=0.5):
     fig.savefig(OUT / "fig6_window_comparison.png")
 
 
+def fig7(key, load=0.5):
+    """Benefit of cache-aware placement per policy in every measured condition."""
+    conds = [("Window 1", RES / "q1" / "results.csv"),
+             ("Window 2", RES / "window2" / "q1" / "results.csv"),
+             ("Window 2, prefetchers on", RES / "window2_prefetch" / "q1" / "results.csv")]
+    conds = [(t, p) for t, p in conds if p.exists()]
+    if len(conds) < 2:
+        return
+    fig, axes = plt.subplots(1, len(conds), figsize=(8.6, 3.3), sharey=True, constrained_layout=True)
+    for ax, (title, pth) in zip(axes, conds):
+        rows = read(pth)
+        present = [p for p in POLICY_ORDER if any(r["policy"] == p for r in rows)]
+        xs = [i + (4 - len(present)) / 2 for i in range(len(present))]  # same bar width in every panel
+        for i, p in zip(xs, present):
+            m, c = paired(rows, p, load, "first_fit", "cache_aware")
+            ax.bar(i, m, yerr=c, width=0.65, color=COLOR[p], capsize=3, error_kw={"ecolor": MUTED, "lw": 1})
+            ax.text(i, m + c + 0.03, f"{m:.2f}", ha="center", va="bottom", fontsize=8, color=INK)
+            key.append({"figure": "fig7", "policy": p, "scheduler": f"{title} cache_aware", "load": load,
+                        "metric": "p95 slowdown reduction vs first_fit", "value": round(m, 4), "ci95": round(c, 4)})
+        ax.set_xticks(xs, [LABEL[p] for p in present])
+        ax.set_xlim(-0.6, 3.6)
+        ax.set_title(title, loc="left")
+        ax.grid(axis="y", color="#e6e5e0", lw=0.6)
+        ax.axhline(0, color=MUTED, lw=0.8)
+    axes[0].set_ylabel("p95 slowdown saved vs first-fit\n(cache-aware, threshold 0.1)")
+    fig.suptitle(f"Placement helps in every condition; which policy gains most does not hold ({load:.0%} load, 95% CI)",
+                 x=0.02, ha="left", fontsize=10.5)
+    fig.savefig(OUT / "fig7_conditions.png")
+
+
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
     key: list[dict] = []
@@ -252,6 +282,7 @@ if __name__ == "__main__":
     fig4(key)
     fig5(key)
     fig6(key)
+    fig7(key)
     with open(OUT / "key_numbers.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(key[0].keys()))
         w.writeheader()
