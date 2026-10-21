@@ -1,0 +1,41 @@
+
+results/q1/results.csv  (18 comparisons, Holm-corrected at 5%)
+  drrip  load 0.3: -0.001  p=0.9564  p_holm=1.0000  
+  drrip  load 0.4: -0.019  p=0.0834  p_holm=1.0000  
+  drrip  load 0.5: -0.041  p=0.0001  p_holm=0.0010  SIGNIFICANT
+  drrip  load 0.6: -0.017  p=0.2991  p_holm=1.0000  
+  drrip  load 0.7: -0.010  p=0.6665  p_holm=1.0000  
+  drrip  load 0.9: +0.009  p=0.4343  p_holm=1.0000  
+  ship   load 0.3: +0.005  p=0.6950  p_holm=1.0000  
+  ship   load 0.4: -0.020  p=0.2133  p_holm=1.0000  
+  ship   load 0.5: -0.046  p=0.0002  p_holm=0.0027  SIGNIFICANT
+  ship   load 0.6: -0.084  p=0.0001  p_holm=0.0015  SIGNIFICANT
+  ship   load 0.7: -0.042  p=0.1535  p_holm=1.0000  
+  ship   load 0.9: +0.004  p=0.7972  p_holm=1.0000  
+  srrip  load 0.3: -0.004  p=0.7296  p_holm=1.0000  
+  srrip  load 0.4: -0.009  p=0.3704  p_holm=1.0000  
+  srrip  load 0.5: -0.018  p=0.0449  p_holm=0.6729  
+  srrip  load 0.6: +0.016  p=0.2367  p_holm=1.0000  
+  srrip  load 0.7: +0.021  p=0.3363  p_holm=1.0000  
+  srrip  load 0.9: +0.005  p=0.6599  p_holm=1.0000  
+
+results/window2/q1/results.csv  (18 comparisons, Holm-corrected at 5%)
+  drrip  load 0.3: +0.400  p=0.0000  p_holm=0.0000  SIGNIFICANT
+  drrip  load 0.4: +0.371  p=0.0000  p_holm=0.0000  SIGNIFICANT
+  drrip  load 0.5: +0.221  p=0.0000  p_holm=0.0004  SIGNIFICANT
+  drrip  load 0.6: +0.055  p=0.0357  p_holm=0.2144  
+  drrip  load 0.7: -0.054  p=0.0146  p_holm=0.1314  
+  drrip  load 0.9: -0.034  p=0.0890  p_holm=0.4449  
+  ship   load 0.3: +0.718  p=0.0000  p_holm=0.0000  SIGNIFICANT
+  ship   load 0.4: +0.758  p=0.0000  p_holm=0.0000  SIGNIFICANT
+  ship   load 0.5: +0.703  p=0.0000  p_holm=0.0000  SIGNIFICANT
+  ship   load 0.6: +0.113  p=0.0261  p_holm=0.1998  
+  ship   load 0.7: +0.030  p=0.2314  p_holm=0.7907  
+  ship   load 0.9: +0.012  p=0.6308  p_holm=1.0000  
+  srrip  load 0.3: +0.480  p=0.0000  p_holm=0.0000  SIGNIFICANT
+  srrip  load 0.4: +0.426  p=0.0000  p_holm=0.0000  SIGNIFICANT
+  srrip  load 0.5: +0.176  p=0.0004  p_holm=0.0043  SIGNIFICANT
+  srrip  load 0.6: -0.003  p=0.9074  p_holm=1.0000  
+  srrip  load 0.7: -0.028  p=0.1977  p_holm=0.7907  
+  srrip  load 0.9: +0.042  p=0.0250  p_holm=0.1998  
+ALLDONE

@@ -180,6 +180,21 @@ python analysis/figures.py
   erases much of that gain, and the benefit of cache-aware placement under SHiP
   is 1.13, far *larger* than under LRU. So whether a smarter policy shrinks or
   grows the value of placement depends on the workload.
+- **All four policies on the second window.** `bash scripts/run_robustness.sh`
+  (test A) added SRRIP and DRRIP on window 2. The reversal is not specific to
+  SHiP: SRRIP and DRRIP also make mcf and xalancbmk much faster alone (mcf
+  +100% and +71%), and under every smarter policy cache-aware placement is
+  worth *more* than under LRU (benefit at 50% load: LRU 0.43, SRRIP 0.61,
+  DRRIP 0.65, SHiP 1.13; Holm-corrected p < 0.01 for all three at 30-50% load,
+  `results/window2/stats.log`). In absolute time with cache-aware placement the
+  order is SHiP 1.02, DRRIP 1.07, SRRIP 1.08, LRU 1.29. In window 1 SRRIP was
+  the slowest policy; here it beats LRU, so policy rankings also depend on the
+  program phase measured.
+- **Prefetchers on (test B, running).** LRU and SHiP on window 2 with an
+  IP-stride L1D prefetcher and SPP at L2 (`results/window2_prefetch/`).
+  ChampSim's SPP aborts when its global history register fills with
+  confidence-100 entries; `scripts/patch_champsim.sh` fixes the victim search
+  without changing any run that did not abort.
 
 ![Window comparison](results/figures/fig6_window_comparison.png)
 
@@ -190,9 +205,10 @@ python analysis/figures.py
 - [x] Placement experiments on the measured tables
 - [x] Absolute-time comparison for all four policies
 - [x] Threshold, job-mix and cluster-size sensitivity
-- [x] Second trace window per benchmark (LRU and SHiP)
+- [x] Second trace window per benchmark (all four policies)
+- [ ] Prefetchers on, second window (running)
 - [ ] Port Mockingjay to current ChampSim (stretch goal)
-- [ ] Technical report
+- [x] Technical report (draft)
 
 ## Limitations
 
