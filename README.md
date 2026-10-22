@@ -190,18 +190,21 @@ python analysis/figures.py
   order is SHiP 1.02, DRRIP 1.07, SRRIP 1.08, LRU 1.29. In window 1 SRRIP was
   the slowest policy; here it beats LRU, so policy rankings also depend on the
   program phase measured.
-- **Prefetchers on.** `bash scripts/run_robustness.sh` (test B) reran LRU and
-  SHiP on window 2 with an IP-stride L1D prefetcher and SPP at L2
+- **Prefetchers on.** `bash scripts/run_robustness.sh` (test B, LRU and SHiP)
+  and `bash scripts/run_prefetch_rrip.sh` (test C, SRRIP and DRRIP) reran
+  window 2 with an IP-stride L1D prefetcher and SPP at L2
   (`results/window2_prefetch/`). Prefetching speeds up most programs alone
-  (gcc about 6x, xalancbmk 2.2x under LRU) and shrinks SHiP's solo advantage
-  (mcf +33% instead of +81%, xalancbmk +11% instead of +77%). lbm is still by
-  far the worst neighbor, and cache-aware placement still saves 0.56 (LRU) and
-  0.54 (SHiP) of p95 slowdown at 50% load; the two are not significantly
-  different at any load after Holm correction. Refusing only the lbm pairs
-  (threshold 1.0) keeps 0.53 of it for 1.5% (LRU) or 0.5% (SHiP) more servers.
-  ChampSim's SPP aborts when its global history register fills with
-  confidence-100 entries; `scripts/patch_champsim.sh` fixes the victim search
-  without changing any run that did not abort.
+  (gcc about 6x, xalancbmk 2.2x under LRU) and shrinks the smarter policies'
+  solo advantage on xalancbmk to 11-18% (from 57-88%); mcf keeps 33-61%.
+  lbm is still by far the worst neighbor under every policy, and cache-aware
+  placement saves 0.50-0.56 of p95 slowdown at 50% load under all four, with
+  no policy different from LRU at any load after Holm correction. Refusing
+  only the lbm pairs (threshold 1.0) keeps 0.52-0.53 of it for 0.5-1.5% more
+  servers. In absolute time every smarter policy beats LRU (p95 1.24-1.26 vs
+  1.33 with cache-aware placement). ChampSim's SPP aborts when its global
+  history register fills with confidence-100 entries;
+  `scripts/patch_champsim.sh` fixes the victim search without changing any
+  run that did not abort.
 
 ![Conditions](results/figures/fig7_conditions.png)
 
@@ -220,7 +223,7 @@ python analysis/figures.py
 - [x] Absolute-time comparison for all four policies
 - [x] Threshold, job-mix and cluster-size sensitivity
 - [x] Second trace window per benchmark (all four policies)
-- [x] Prefetchers on, second window (LRU and SHiP)
+- [x] Prefetchers on, second window (all four policies)
 - [ ] Port Mockingjay to current ChampSim (stretch goal)
 - [x] Technical report (draft)
 

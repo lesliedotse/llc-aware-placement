@@ -1,8 +1,20 @@
 
-results/window2_prefetch/q1/results.csv  (6 comparisons, Holm-corrected at 5%)
+results/window2_prefetch/q1/results.csv  (18 comparisons, Holm-corrected at 5%)
+  drrip  load 0.3: +0.000  p=0.9814  p_holm=1.0000  
+  drrip  load 0.4: +0.028  p=0.1195  p_holm=1.0000  
+  drrip  load 0.5: -0.052  p=0.0272  p_holm=0.4358  
+  drrip  load 0.6: -0.030  p=0.2350  p_holm=1.0000  
+  drrip  load 0.7: +0.062  p=0.0833  p_holm=1.0000  
+  drrip  load 0.9: +0.027  p=0.2613  p_holm=1.0000  
   ship   load 0.3: +0.007  p=0.7092  p_holm=1.0000  
   ship   load 0.4: -0.001  p=0.9680  p_holm=1.0000  
   ship   load 0.5: -0.027  p=0.3024  p_holm=1.0000  
   ship   load 0.6: -0.027  p=0.4039  p_holm=1.0000  
-  ship   load 0.7: +0.092  p=0.0098  p_holm=0.0587  
-  ship   load 0.9: +0.043  p=0.1402  p_holm=0.7010  
+  ship   load 0.7: +0.092  p=0.0098  p_holm=0.1732  
+  ship   load 0.9: +0.043  p=0.1402  p_holm=1.0000  
+  srrip  load 0.3: +0.019  p=0.2731  p_holm=1.0000  
+  srrip  load 0.4: +0.064  p=0.0096  p_holm=0.1732  
+  srrip  load 0.5: -0.061  p=0.0462  p_holm=0.6466  
+  srrip  load 0.6: -0.041  p=0.1245  p_holm=1.0000  
+  srrip  load 0.7: +0.052  p=0.0422  p_holm=0.6325  
+  srrip  load 0.9: +0.048  p=0.0586  p_holm=0.7620  
